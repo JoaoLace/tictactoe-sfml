@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "g++",
+            "args": ["-std=c++11", "-Wall", "-I/usr/include", "main.cpp", "-o", "main", "-lsfml-graphics", "-lsfml-window", "-lsfml-system"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
