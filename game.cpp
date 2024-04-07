@@ -21,26 +21,47 @@ void Game::render()
    }
 }
 
-void Game::run()
+void Game::updateGui()
 {
+    updateEvent();
+    Gui.update(*window);
+    std::cout << atGui;
+}
+
+void Game::run() {
     init();
-    while (gameRunning or atEndScreen)
-        {
-            if (!crtl)
-            {
-                break;
-            }
-            if (!atEndScreen)
-            {
-                update();
-            }
-            if (atEndScreen)
-            {
-                    updateEvent();
-            }
-            render();
+
+    while (atGui) {
+        updateGui();
+        renderInicialScreen();
+
+        if (Gui.goTo2Players) {
+            atGui = false;
         }
-    
+    }
+
+    while (gameRunning or atEndScreen) {
+        if (!crtl) {
+            break;
+        }
+        if (!atEndScreen) {
+            update();
+        }
+        if (atEndScreen) {
+            updateEvent();
+        }
+        render();
+
+        if (showGuiEnd)
+            {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                Gui.renderEndScreen(*window, Tic.winner);
+                window->display();
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::exit(EXIT_SUCCESS);
+            }
+    }
+
 }
 
  bool Game::endGame()
@@ -53,15 +74,17 @@ void Game::run()
     return GAME_NOT_FINESHED;
  }
 
-
 void Game::init()
 {
     gameRunning = true;
     atEndScreen = false;
     crtl = true;
+    atGui = true;
+    showGuiEnd = false;
 
     window = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
     window->setPosition(sf::Vector2i(600,300));
+    window->setFramerateLimit(30);
 
     event = std::make_unique<sf::Event>();
 
@@ -76,6 +99,7 @@ void Game::init()
     initShapes();
 
     Tic.init();
+    Gui.init();
 }
 
 void Game::initShapes()
@@ -103,6 +127,8 @@ void Game::initShapes()
 Game::~Game() {
     delete player1Moves;
     delete player2Moves;
+
+    Gui.~gui();
 }
 
 void Game::updateEvent()
@@ -120,6 +146,13 @@ void Game::updateEvent()
         }
 }
 
+void Game::renderInicialScreen()
+{
+    window->clear();
+    Gui.render(*window);
+    window->display();
+}
+
 void Game::printWinner(char player)
 {
     std::cout << "\n" <<  player << " is the winner!!\n";
@@ -129,17 +162,18 @@ void Game::update()
 {
     updateEvent();
 
-
     if (endGame())
     {
         printWinner(Tic.winner);
         printEndScreen();
+        showGuiEnd = true;
         gameRunning = false;
     }
 
     if (Tic.tie())
     {
         std::cout << "\nIts a tie!!\n";
+        showGuiEnd = true;
         gameRunning = false;
     }
 
@@ -152,21 +186,6 @@ void Game::draw()
     {
         window->draw(*line);
     }
-}
-
-const sf::Vector2f Game::getMousePos()
-{
-   return (sf::Vector2f) sf::Mouse::getPosition(*window);
-}
-
-void Game::updateMousePos()
-{
-
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-        {
-            updateBoard(getGridePos(getMousePos()), player);
-        }
-    
 }
 
 const sf::Vector2i Game::getGridePos(sf::Vector2f pos)
@@ -216,7 +235,7 @@ void Game::updateBoard(sf::Vector2i pos, char p)
     if (Tic.board[pos.x][pos.y] == ' ')
     {
         Tic.board[pos.x][pos.y] = p;
-        createPlay(player, getGridePos(getMousePos()));
+        createPlay(player, getGridePos(getMousePos(*window)));
 
          if (player == PLAYER1)
                 player = PLAYER2;
@@ -227,7 +246,15 @@ void Game::updateBoard(sf::Vector2i pos, char p)
     }
 
 }
+void Game::updateMousePos()
+{
 
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+        {
+            updateBoard(getGridePos(getMousePos(*window)), player);
+        }
+    
+}
 void Game::printEndScreen() {
     if (Tic.whereWasWon.type == LINE) {
         switch (Tic.whereWasWon.index) {
@@ -279,6 +306,7 @@ void Game::printEndScreen() {
     }
 }
     atEndScreen = true;
+    
 }
 
 

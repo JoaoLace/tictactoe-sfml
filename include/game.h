@@ -1,26 +1,17 @@
 #pragma once
-#include <iostream>
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
-#include <memory>
-#include <vector>
-#include "logic.h"
-#define BLUE sf::Color::Blue
-#define BLACK sf::Color::Black
-#define RADIUS 80
-#define RECT_SIZE sf::Vector2f(3,180)
-#define RED sf::Color::Red
-#define WHITE sf::Color::White
-class tic;
+#include "funcs.h"
+
 class Game{
 public:
     void run();
     ~Game();
 private:
     tic Tic;
+    gui Gui;
 
     void render();
     void renderPlays();
+    void renderInicialScreen();
 
     void draw();
 
@@ -29,6 +20,7 @@ private:
     void updateMousePos();
     void updateBoard(sf::Vector2i pos, char p);
     void createPlay(char player, sf::Vector2i pos);
+    void updateGui();
     
     void printWinner(char player);
     void printPlay(char player);
@@ -42,6 +34,7 @@ private:
 
     bool gameRunning;
     bool atEndScreen;
+    bool showGuiEnd;
 
     std::unique_ptr<sf::RenderWindow> window;
     std::unique_ptr<sf::Event> event;
@@ -52,7 +45,6 @@ private:
 
     sf::RectangleShape *endLine;
 
-    const sf::Vector2f getMousePos();
     const sf::Vector2i getGridePos(sf::Vector2f pos);
     const sf::Vector2i gridePosToPixels(sf::Vector2i gridePos);
 
@@ -60,6 +52,8 @@ private:
     int control = 0;
 
     bool crtl;
+    bool atGui;
+
 
 
 };

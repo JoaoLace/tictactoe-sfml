@@ -23,13 +23,6 @@ void tic::render()
                 std::cout << " ";
               }
                 std::cout << "\n";
-
-                // ' ' -> 32
-                // x -> 120
-                // o -> 111
-
-                // 360 -> X wins
-                // 333 -> O wins
         }
 }
 
