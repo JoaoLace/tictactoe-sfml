@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <time.h>
 
 #include "logic.h"
 #include "gui.h"

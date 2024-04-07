@@ -22,6 +22,8 @@ public:
     void update(sf::RenderTarget& target);
 
     void testMouse(sf::RenderTarget& target);
+    void testMouse2(sf::RenderTarget& target);
+
 
     std::vector <sf::Text> *texts;
     std::vector <sf::Text> *endTexts;
@@ -32,6 +34,7 @@ public:
     
 
     bool goTo2Players;
+    bool goTo1Player;
 
 
 };

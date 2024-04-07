@@ -21,6 +21,11 @@ private:
     void updateBoard(sf::Vector2i pos, char p);
     void createPlay(char player, sf::Vector2i pos);
     void updateGui();
+    void update1player();
+    
+    void botPlays();
+    bool valid_play(sf::Vector2i play);
+    sf::Vector2i get_Botplay();
     
     void printWinner(char player);
     void printPlay(char player);
@@ -35,6 +40,7 @@ private:
     bool gameRunning;
     bool atEndScreen;
     bool showGuiEnd;
+    bool single_player;
 
     std::unique_ptr<sf::RenderWindow> window;
     std::unique_ptr<sf::Event> event;

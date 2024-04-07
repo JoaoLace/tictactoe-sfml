@@ -21,7 +21,7 @@ void gui::initText() {
     endTexts = new std::vector<sf::Text>;
     createText({0,0}, font_color, font_size, "Reaaaalllyy simple Tic-Tac-Toe Game using SFML"); 
     createText({0,60}, font_color, font_size, "Source at: https://github.com/JoaoLace/tictactoe-sfml");
-    createText({150,120},font_color, font_size, "*Play (1 Player - Working on it)*");
+    createText({150,120},font_color, font_size, "*Play (1 Player)*");
     createText({150,180},font_color, font_size, "*Play (2 Players)*");
 }
 
@@ -63,18 +63,43 @@ gui::~gui() {
 
 void gui::update(sf::RenderTarget& target){
     testMouse(target);
+    testMouse2(target);
 }
 
 void gui::testMouse(sf::RenderTarget& target) {
-    if (sf::Mouse::isButtonPressed(LEFT_BUTTON)) {
-        sf::Vector2f mousePos = getMousePos(target);
-        sf::FloatRect playButtonRect = texts->at(3).getGlobalBounds(); 
-        if (pointInRect(mousePos, playButtonRect)) {
+    sf::Vector2f mousePos = getMousePos(target);
+    sf::FloatRect playButtonRect = texts->at(3).getGlobalBounds(); 
+
+    if (pointInRect(mousePos, playButtonRect)) {
+        texts->at(3).setFillColor(sf::Color::White);
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
             std::cout << "\n\"*Play (2 Players)*\" text is being pressed\n";
             goTo2Players = true;
             sf::sleep(sf::seconds(0.5));
         }
+    } else {
+        texts->at(3).setFillColor(sf::Color::Red);
     }
+}
+
+
+void gui::testMouse2(sf::RenderTarget& target)
+{
+    sf::Vector2f mousePos = getMousePos(target);
+    sf::FloatRect playButtonRect = texts->at(2).getGlobalBounds(); 
+        if (pointInRect(mousePos, playButtonRect)) {
+            texts->at(2).setFillColor(WHITE);
+        if (sf::Mouse::isButtonPressed(LEFT_BUTTON)) {
+     
+            std::cout << "\n\"*Play (1 Players)*\" text is being pressed\n";
+            goTo1Player = true;
+            sf::sleep(sf::seconds(0.5));
+        }
+        }else {
+             texts->at(2).setFillColor(RED);
+
+        }
 }
 
 void gui::renderEndScreen(sf::RenderTarget &window, char player){

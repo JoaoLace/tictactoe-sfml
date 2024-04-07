@@ -38,14 +38,20 @@ void Game::run() {
         if (Gui.goTo2Players) {
             atGui = false;
         }
+        if (Gui.goTo1Player){
+            atGui = false;
+        }
     }
 
     while (gameRunning or atEndScreen) {
         if (!crtl) {
             break;
         }
-        if (!atEndScreen) {
+        if (!atEndScreen and !Gui.goTo1Player) {
             update();
+        }
+        if (!atEndScreen and Gui.goTo1Player){
+            update1player();
         }
         if (atEndScreen) {
             updateEvent();
@@ -81,6 +87,7 @@ void Game::init()
     crtl = true;
     atGui = true;
     showGuiEnd = false;
+    single_player = false;
 
     window = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
     window->setPosition(sf::Vector2i(600,300));
@@ -235,14 +242,16 @@ void Game::updateBoard(sf::Vector2i pos, char p)
     if (Tic.board[pos.x][pos.y] == ' ')
     {
         Tic.board[pos.x][pos.y] = p;
-        createPlay(player, getGridePos(getMousePos(*window)));
+        if (player == PLAYER1)
+        {
+            createPlay(player, getGridePos(getMousePos(*window)));
+        }
+         else if (player == PLAYER2)
+        {
+            createPlay(player, pos);
+        }
 
-         if (player == PLAYER1)
-                player = PLAYER2;
-
-            else if (player == PLAYER2)
-                player = PLAYER1;
-
+        player = (player == PLAYER1) ? PLAYER2 : PLAYER1;
     }
 
 }
@@ -377,5 +386,67 @@ void Game::createPlay(char player, sf::Vector2i pos)
         temp.setFillColor(BLACK);
 
         player2Moves->push_back(temp);
+    }
+}
+
+void Game::botPlays()
+{
+    if (player == PLAYER2)
+    {
+        sf::Vector2i botPlay;
+        while (true) {
+            botPlay = get_Botplay();
+            if (valid_play(botPlay))
+            {
+                updateBoard(botPlay, PLAYER2);
+                player = PLAYER1;
+                break; 
+            }
+        }
+    }
+}
+
+
+bool Game::valid_play(sf::Vector2i play){
+    if (Tic.board[play.x][play.y] == ' ')
+        return true;
+
+    return false;
+}
+
+sf::Vector2i Game::get_Botplay()
+{
+    int x = rand() % 3;
+    int y = rand() % 3;
+    std::cout << "bot -> [" << x << "][" << y <<"]\n"; 
+    return {x,y};
+}
+
+void Game::update1player()
+{
+    updateEvent();
+
+    if (endGame())
+    {
+        printWinner(Tic.winner);
+        printEndScreen();
+        showGuiEnd = true;
+        gameRunning = false;
+    }
+
+    if (Tic.tie())
+    {
+        std::cout << "\nIts a tie!!\n";
+        showGuiEnd = true;
+        gameRunning = false;
+    }
+
+    if (player == PLAYER1)
+    {
+        updateMousePos();
+    }
+    else if (player == PLAYER2)
+    {
+       botPlays();
     }
 }
